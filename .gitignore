@@ -7,3 +7,4 @@ out
 dist
 *.swp
 *.pyc
+*.egg-info
