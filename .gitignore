@@ -1,0 +1,9 @@
+.py3
+.test_install
+__pycache__
+.DS_Store
+.env
+out
+dist
+*.swp
+*.pyc
