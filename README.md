@@ -1,6 +1,44 @@
-How to Grid
+Grid Toolkit for Grafana
 ===
 
+Generate and similar dashboards from code with many variations for hundreds of environments, based on pydantic and grafanalib
+
+## Installation and Quick Start
+
+```bash
+❯❯❯ virtualenv .py3
+❯❯❯ source .py3/bin/activate
+
+❯❯❯ pip install noroutine-grit
+
+❯❯❯ python -m grit -h
+
+# Inspect examples
+❯❯❯ python -m grit inspect --module examples.dashboards
+# Example output
+---
+name: examples.dashboards
+folders:
+- jmeter
+- mongodb
+variations:
+  environment:
+  - dev
+  - prod
+  - qa
+  - test
+
+# Generate dashboards for all environments
+❯❯❯ python -m grit generate --module examples.dashboards --out 'out/{environment}' --var 'environment=*' 
+# Example output 
+Generating out/dev
+Generating out/prod
+Generating out/qa
+Generating out/test
+
+```
+
+## Overview
 Example dashboard
 
 ```python
@@ -14,13 +52,18 @@ GritDash(
         'tag2'
     ],
     timezone="browser",
+    # Apply datasource to all panels in the dashboard
     dataSource="Prometheus",
     stack=Stack(
-        row6(panel1),
+        row7(panel1),
+        # Use simple utilities, row6 is row of panels of height 6
         row6(panel1, panel2),
-        row6(panel1, panel2, panel3),
-        row6(panel1, panel2, panel3, panel4),
-        row6(panel1, panel2, panel3, panel4, panel5),
+        # Autosize panels, this will be 3 equal panels in the row
+        row5(panel1, panel2, panel3),
+        # ... or 4, if you want, no need to calculate coordinates
+        row4(panel1, panel2, panel3, panel4),
+        # ... sometimes less is more
+        row3(panel1, panel2, panel3, panel4, panel5),
     )
 )
 ```
@@ -45,6 +88,7 @@ Environment(name="prod", color="red")
 When writing dashboard you can access specific variation values by calling `<VariationClass>.resolve()`
 
 ```python
+# Illustrative code
 environment = Environment.resolve()
 print(environment.color)
 print(environment.name)
@@ -82,8 +126,10 @@ Animal(name="turtle")
 Animal(name="rat")
 ```
 
-And use all of them during generation
+And use all of them during generation, you can template output directory structure to your liking!
+
 ```bash
+
 ❯❯❯ python -m grit generate --module grafana.dashboards --out 'out/{turn}-{taste}-{animal}-company/{environment}' --var environment=qa environment=prod animal=* turn=first taste=sweet
 Generating out/first-sweet-donkey-company/qa
 Generating out/first-sweet-donkey-company/prod
@@ -94,7 +140,6 @@ Generating out/first-sweet-rat-company/prod
 Generating out/first-sweet-turtle-company/qa
 Generating out/first-sweet-turtle-company/prod
 ```
-
 
 # Command-Line
 
@@ -120,6 +165,7 @@ variations:
 ## Publish to Grafana
 
 ```
+# Needs .env file with some vars
 ❯❯❯ python -m grit publish --module grafana.dashboards --var environment=dev
 ```
 
