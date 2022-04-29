@@ -94,7 +94,7 @@ print(environment.color)
 print(environment.name)
 ```
 
-You create as many variatoins as you want and combine them
+You create as many variations as you want and combine them
 ```python
 class Environment(Variation):
   color: str = "green"
