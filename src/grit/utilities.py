@@ -1,5 +1,5 @@
 from grafanalib.core import Panel
-from .grit import Row
+from .row import Row
 
 def row3(*args: Panel):
     return Row(3, *args)

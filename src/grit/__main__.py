@@ -10,7 +10,7 @@ import yaml
 import os
 
 from grit import *
-from grit.config import Folder
+from grit.folder import Folder
 from grit.variation import Variation
 from pydantic_argparse import *
 
@@ -19,13 +19,8 @@ class InspectCommand(BaseModel):
     module: str
 
     def run(self: str) -> None:
-        grit_module = importlib.import_module(self.module)
-
-        print(yaml.dump({
-            "name": grit_module.__name__,
-            "folders": list(map(lambda m: m.name, pkgutil.iter_modules(grit_module.__path__))),
-            "variations": Variation.find_variations_simple(grit_module)
-        }, sort_keys=False, indent=2, explicit_start=True))
+        print(yaml.dump(Grit.inspect(self.module),
+                        sort_keys=False, indent=2, explicit_start=True))
 
 
 class PublishCommand(BaseModel):
@@ -44,7 +39,8 @@ class PublishCommand(BaseModel):
             for var_arg in self.var:
                 [k, v] = var_arg.split('=')
                 if v == "*":
-                    print(f"Wildcard resolutions are not supported with publish command")
+                    print(
+                        f"Wildcard resolutions are not supported with publish command")
                 resolutions[k] = v
 
         Variation.resolve_variations(
@@ -79,7 +75,7 @@ class GenerateCommand(BaseModel):
         grit_module = importlib.import_module(self.module)
 
         module_variations = Variation.find_variations_simple(grit_module)
-        requested_dict = dict((v, []) for v in module_variations.keys() )
+        requested_dict = dict((v, []) for v in module_variations.keys())
         if self.var:
             for var_arg in self.var:
                 [k, v] = var_arg.split('=')
@@ -92,14 +88,16 @@ class GenerateCommand(BaseModel):
                     print(f"Ignoring unknown variation {k}")
 
         # Remove empty
-        requested_dict = {k: v for k, v in requested_dict.items() if len(v) > 0}
+        requested_dict = {k: v for k,
+                          v in requested_dict.items() if len(v) > 0}
 
         requested_sets = []
         for k, v in requested_dict.items():
             requested_sets.append(list(map(lambda r: (k, r), v)))
 
         # Here we have finally the desired requested combinations
-        requested_combinations = list(map(lambda t: dict(t), list(product(*requested_sets))))
+        requested_combinations = list(
+            map(lambda t: dict(t), list(product(*requested_sets))))
 
         # Let's roll
         for resolution_combination in requested_combinations:
@@ -110,9 +108,11 @@ class GenerateCommand(BaseModel):
                 ignore_missing=True
             )
 
-            resolved_variations_subst = {v.__name__.lower(): r.name for v, r in resolved_variations.items()}
+            resolved_variations_subst = {
+                v.__name__.lower(): r.name for v, r in resolved_variations.items()}
 
-            out_base_dir = self.out.format(module=self.module, **resolved_variations_subst)
+            out_base_dir = self.out.format(
+                module=self.module, **resolved_variations_subst)
             print(f"Generating {out_base_dir}")
 
             for module in pkgutil.iter_modules(grit_module.__path__):

@@ -1,9 +1,10 @@
 import json
-from pydantic import BaseModel, BaseSettings
+from pydantic import BaseSettings
 import requests
 
 from grafanalib.core import Dashboard
 from grafanalib._gen import DashboardEncoder
+
 
 class Grafana(BaseSettings):
     """
