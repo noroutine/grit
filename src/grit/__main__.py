@@ -137,7 +137,7 @@ arg_parser = ArgumentParser(
     model=Arguments,
     prog="Grit",
     description="Grid Toolkit",
-    version="0.0.3",
+    version="0.0.4",
 )
 
 # first pass

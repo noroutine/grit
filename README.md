@@ -1,7 +1,7 @@
 Grid Toolkit for Grafana
 ===
 
-Generate and similar dashboards from code with many variations for hundreds of environments, based on pydantic and grafanalib
+Generate similar but varying dashboards from code with many variations for hundreds of environments. Based on grafanalib
 
 ## Installation and Quick Start
 
