@@ -1,3 +1,4 @@
+from operator import mod
 import pkgutil
 import importlib
 from typing import Optional
@@ -31,8 +32,6 @@ class PublishCommand(BaseModel):
     def run(self) -> None:
         grafana = Grafana(_env_file=self.env)
 
-        grit_module = importlib.import_module(self.module)
-
         resolutions = {}
 
         if self.var:
@@ -43,27 +42,21 @@ class PublishCommand(BaseModel):
                         f"Wildcard resolutions are not supported with publish command")
                 resolutions[k] = v
 
-        Variation.resolve_variations(
-            grit_module,
-            resolutions=resolutions
-        )
+        Grit.load_with_resolutions(self.module, resolutions=resolutions)
 
-        for module in pkgutil.iter_modules(grit_module.__path__):
-            folder_module = importlib.import_module(
-                f"{grit_module.__name__}.{module.name}")
-
+        for folder_module in Grit.get_folder_modules(self.module):
             # TODO: do we want to place in General folder??, it's a special api
             # if its in root folder, then it makes sense to create it in general folder
 
-            grafana.publish_folder(module.name, module.name)
+            folder_uid = Folder.get_uid(folder_module)
+            folder_title = Folder.get_uid(folder_module)
+
+            grafana.publish_folder(uid=folder_uid, title=folder_title)
 
             for _obj_name in folder_module.__dict__:
                 _obj = folder_module.__dict__[_obj_name]
-                if isinstance(_obj, Folder):
-                    grafana.publish_folder(module.name, _obj.title)
-
                 if isinstance(_obj, Dashboard):
-                    grafana.publish_dashboard(folder_uid=module.name, d=_obj)
+                    grafana.publish_dashboard(folder_uid=folder_uid, d=_obj)
 
 
 class GenerateCommand(BaseModel):
@@ -72,6 +65,7 @@ class GenerateCommand(BaseModel):
     out: str
 
     def run(self):
+        # Here we basically match requested vs supported, to find possible combinations
         grit_module = importlib.import_module(self.module)
 
         module_variations = Variation.find_variations_simple(grit_module)
@@ -101,34 +95,30 @@ class GenerateCommand(BaseModel):
 
         # Let's roll
         for resolution_combination in requested_combinations:
-            # print(resolution_combination)
-            resolved_variations = Variation.resolve_variations(
-                grit_module,
-                resolutions=resolution_combination,
-                ignore_missing=True
-            )
+            resolved_variations = Grit.load_with_resolutions(
+                self.module, resolutions=resolution_combination, ignore_missing=True)
 
             resolved_variations_subst = {
                 v.__name__.lower(): r.name for v, r in resolved_variations.items()}
 
             out_base_dir = self.out.format(
                 module=self.module, **resolved_variations_subst)
+
             print(f"Generating {out_base_dir}")
 
-            for module in pkgutil.iter_modules(grit_module.__path__):
-                folder_module = importlib.import_module(
-                    f"{grit_module.__name__}.{module.name}")
+            for folder_module in Grit.get_folder_modules(self.module):
+                folder_uid = Folder.get_uid(folder_module)
 
                 # TODO: do we want to place in General folder??, it's a special api
                 # if its in root folder, then it makes sense to create it in general folder
 
-                os.makedirs(f"{out_base_dir}/{module.name}", exist_ok=True)
+                os.makedirs(f"{out_base_dir}/{folder_uid}", exist_ok=True)
 
                 for _obj_name in folder_module.__dict__:
                     _obj = folder_module.__dict__[_obj_name]
 
                     if isinstance(_obj, Dashboard):
-                        with open(f"{out_base_dir}/{module.name}/{_obj.uid}.json", "w") as file:
+                        with open(f"{out_base_dir}/{folder_uid}/{_obj.uid}.json", "w") as file:
                             file.write(json.dumps(
                                 _obj.to_json_data(), sort_keys=True, indent=2, cls=DashboardEncoder))
 
@@ -147,7 +137,7 @@ arg_parser = ArgumentParser(
     model=Arguments,
     prog="Grit",
     description="Grid Toolkit",
-    version="0.0.1",
+    version="0.0.3",
 )
 
 # first pass

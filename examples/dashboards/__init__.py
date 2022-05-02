@@ -1,4 +1,4 @@
-from grit.variation import Variation
+from grit import Variation
 
 class Environment(Variation):
   var1: str = "lalala"
@@ -13,7 +13,7 @@ class Environment(Variation):
 #   pass
 
 Environment(name="dev")
-Environment(name="qa")
+Environment(name="qa", var1="lololo")
 Environment(name="test")
 Environment(name="prod")
 

@@ -118,7 +118,7 @@ class Variation(BaseSettings):
         return m.__dict__.get(VARIATION_RESOLUTIONS_MAGIC_STR)
 
     @classmethod
-    def resolve_variations(cls, m: Module, resolutions: dict[str, str], ignore_missing: bool = False) -> None:
+    def resolve_variations(cls, m: Module, resolutions: dict[str, str], ignore_missing: bool = False) -> dict[VARIATION_TYPE, VARIATION_TYPE]:
         _n_resolutions = {key.lower(): val for key, val in resolutions.items()}
 
         resolved_variations: dict[VARIATION_TYPE, VARIATION_TYPE] = {}

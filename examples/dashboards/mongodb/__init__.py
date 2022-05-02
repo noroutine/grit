@@ -3,8 +3,6 @@ from .. import Environment
 from grit import *
 from .panels import *
 
-from grit.config import Folder
-
 environment: Environment = Environment.resolve()
 
 if environment.name =="dev":
