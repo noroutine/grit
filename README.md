@@ -201,6 +201,7 @@ Each creating row of respective height
 ```
 virtualenv .py3
 source .py3/bin/activate
+pip install -r requirements.txt
 export PYTHONPATH=src
 python -m grit --version
 ```
