@@ -9,3 +9,4 @@ dist
 *.swp
 *.pyc
 *.egg-info
+.pytest_cache

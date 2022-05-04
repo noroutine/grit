@@ -195,3 +195,12 @@ Each creating row of respective height
   *  `row6`
   *  `row7`
   *  `row8`
+
+# How to develop
+
+```
+virtualenv .py3
+source .py3/bin/activate
+export PYTHONPATH=src
+python -m grit --version
+```
