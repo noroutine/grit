@@ -34,7 +34,7 @@ class GritDash(grafanalib.core.Dashboard):
 
     def __attrs_post_init__(self):
         def dataSource_override(p: grafanalib.core.Panel):
-            if p.dataSource == None:
+            if not hasattr(p, 'dataSource') or p.dataSource == None:
                 p.dataSource = self.dataSource
             return p
 
