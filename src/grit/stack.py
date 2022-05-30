@@ -22,4 +22,8 @@ class Stack:
             panels += row.to_panels(y_int)
             y_int += row.height
 
+        # override all ids
+        for idx, p in enumerate(panels):
+            p.id = idx + 1
+
         return panels
