@@ -6,6 +6,7 @@ __pycache__
 .env
 out
 dist
+build
 *.swp
 *.pyc
 *.egg-info

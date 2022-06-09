@@ -11,6 +11,7 @@ import yaml
 import os
 
 from grit import *
+from grit import __version__ as grit_version
 from grit.folder import Folder
 from grit.variation import Variation
 from pydantic_argparse import *
@@ -137,7 +138,7 @@ arg_parser = ArgumentParser(
     model=Arguments,
     prog="Grit",
     description="Grid Toolkit",
-    version="0.0.4",
+    version=grit_version,
 )
 
 # first pass

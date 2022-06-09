@@ -1,3 +1,6 @@
+__version__ = "0.0.6"
+__author__ = "Noroutine GmbH <info@noroutine.me>"
+
 from .utilities import *
 from .grit import *
 from .grafana import *
