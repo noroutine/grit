@@ -13,6 +13,7 @@ class Environment(Variation):
 #   pass
 
 Environment(name="dev")
+Environment(name="dev-nab")
 Environment(name="qa", var1="lololo")
 Environment(name="test")
 Environment(name="prod")
