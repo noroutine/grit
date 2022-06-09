@@ -1,12 +1,11 @@
 import setuptools
-from src.grit import __version__ as grit_version
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="noroutine-grit",
-    version=grit_version,
+    version="0.0.7",
     author='Oleksii Khilkevych',
     author_email="oleksiy@noroutine.me",
     maintainer="Noroutine GmbH",
