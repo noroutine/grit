@@ -1,6 +1,7 @@
 from modulefinder import Module
 from attrs import define
 
+import sys
 import importlib
 import pkgutil
 
@@ -26,8 +27,15 @@ class Grit:
             returns resolved_variations
 
         """
+
+        # print(f"Reloading {module} with {resolutions}")
+        # Cleanup cached child imports
+        for m_name, m in list(sys.modules.items()):
+            if m.__name__.startswith(module):
+                # print(f"Evicting module {m_name}: {m.__name__}")
+                sys.modules.pop(m.__name__, None)
+
         grit_module = importlib.import_module(module)
-        importlib.reload(grit_module)
 
         resolved_variations = Variation.resolve_variations(
             grit_module,
@@ -39,8 +47,6 @@ class Grit:
             folder_module = importlib.import_module(
                 f"{grit_module.__name__}.{module.name}")
 
-            importlib.reload(folder_module)
-
             # if title is missing, assign a default one
             # TODO: make a way to create default folder without side-effect
             if not Folder.get_title(folder_module):
@@ -50,6 +56,16 @@ class Grit:
                 Folder.set_uid(folder_module, module.name)
 
         return resolved_variations
+
+    @classmethod
+    def _deep_reload(cls, module: Module) -> None:
+        importlib.reload(module)
+
+        for module_attr in dir(module):
+            submodule = getattr(module, module_attr)
+            if isinstance(submodule, Module):
+                Grit._deep_reload(submodule)
+                print(f"Reloaded {submodule}")
 
     @classmethod
     def get_folder_modules(cls, module: str) -> list[Module]:

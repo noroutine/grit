@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="noroutine-grit",
-    version="0.0.7",
+    version="0.0.8",
     author='Oleksii Khilkevych',
     author_email="oleksiy@noroutine.me",
     maintainer="Noroutine GmbH",
@@ -33,6 +33,6 @@ setuptools.setup(
         "requests",
     ],
     package_dir={
-        "noroutine-grit": "src"
+        "": "src"
     }
 )

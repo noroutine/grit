@@ -99,6 +99,8 @@ class GenerateCommand(BaseModel):
             resolved_variations = Grit.load_with_resolutions(
                 self.module, resolutions=resolution_combination, ignore_missing=True)
 
+            # print(f"Loaded {self.module} with {resolution_combination}")
+
             resolved_variations_subst = {
                 v.__name__.lower(): r.name for v, r in resolved_variations.items()}
 

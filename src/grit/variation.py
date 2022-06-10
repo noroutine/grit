@@ -62,6 +62,7 @@ class Variation(BaseSettings):
             if resolutions:
                 caller_resolution = resolutions.get(cls)
                 if caller_resolution:
+                    # print(f"Resolved {cls} in {inspected_module} to {caller_resolution.name}")
                     return caller_resolution
 
             # not found, search parent module
