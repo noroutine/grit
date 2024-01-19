@@ -5,7 +5,7 @@ charset-normalizer==2.0.12
 grafanalib==0.6.3
 idna==3.3
 pycodestyle==2.8.0
-pydantic==1.9.1
+pydantic==1.10.14
 pydantic-argparse==0.5.0
 python-decouple==3.6
 python-dotenv==0.20.0
